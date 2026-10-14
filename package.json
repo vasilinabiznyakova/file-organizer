@@ -1,0 +1,17 @@
+{
+  "name": "file-organizer",
+  "version": "1.0.0",
+  "description": "CLI tool for scanning, finding duplicates, organizing and cleaning directories",
+  "type": "module",
+  "bin": {
+    "file-organizer": "./file-organizer.js"
+  },
+  "scripts": {
+    "start": "node file-organizer.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.1.0"
+  },
+  "license": "MIT"
+}
