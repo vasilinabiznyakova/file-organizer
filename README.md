@@ -17,15 +17,15 @@ node file-organizer.js scan ./Downloads
 node file-organizer.js duplicates ./Downloads
 node file-organizer.js organize ./Downloads
 node file-organizer.js organize ./Downloads --output ./Sorted
-node file-organizer.js cleanup ./Downloads --days 90 --dry-run
-node file-organizer.js cleanup ./Downloads --days 90
+node file-organizer.js cleanup ./Downloads --older-than 90
+node file-organizer.js cleanup ./Downloads --older-than 90 --confirm
 ```
 
 `organize` лише копіює файли, залишаючи оригінали без змін. За замовчуванням
 результат створюється у `<directory>/Organized`. Якщо вихідна директорія вже
 містить файл з таким ім’ям, до копії додається числовий суфікс.
 
-Перед реальним очищенням рекомендовано запускати `cleanup` з `--dry-run`.
+`cleanup` за замовчуванням працює в безпечному dry-run режимі: показує список файлів, розмір кожного та підсумок. Файли видаляються лише з прапорцем `--confirm`.
 Порожні директорії після очищення не видаляються.
 
 ## Події

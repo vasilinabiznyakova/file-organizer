@@ -40,12 +40,14 @@ test('CLI executes scan, duplicates, organize and cleanup workflows', async (t) 
   assert.equal(organize.status, 0, organize.stderr);
   assert.equal((await stat(path.join(output, 'Documents', 'old.txt'))).isFile(), true);
 
-  const preview = run('cleanup', root, '--days', '30', '--dry-run');
+  const preview = run('cleanup', root, '--older-than', '30');
   assert.equal(preview.status, 0, preview.stderr);
   assert.match(preview.stdout, /Would remove 1 files/);
+  assert.match(preview.stdout, /old\.txt \(9 B\)/);
+  assert.match(preview.stdout, /Dry run: no files were deleted/);
   assert.equal((await stat(oldFile)).isFile(), true);
 
-  const cleanup = run('cleanup', root, '--days', '30');
+  const cleanup = run('cleanup', root, '--older-than', '30', '--confirm');
   assert.equal(cleanup.status, 0, cleanup.stderr);
   assert.match(cleanup.stdout, /Removed 1 files/);
   await assert.rejects(stat(oldFile), { code: 'ENOENT' });
@@ -56,7 +58,7 @@ test('CLI reports invalid paths and cleanup arguments', () => {
   assert.equal(missing.status, 1);
   assert.match(missing.stderr, /Помилка:/);
 
-  const invalidDays = run('cleanup', os.tmpdir(), '--days', 'not-a-number');
+  const invalidDays = run('cleanup', os.tmpdir(), '--older-than', 'not-a-number');
   assert.equal(invalidDays.status, 1);
-  assert.match(invalidDays.stderr, /--days/);
+  assert.match(invalidDays.stderr, /--older-than/);
 });

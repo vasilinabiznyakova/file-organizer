@@ -75,12 +75,12 @@ test('Cleaner previews and then removes old files', async (t) => {
   const oldDate = new Date(Date.now() - 100 * 86_400_000);
   await utimes(oldFile, oldDate, oldDate);
 
-  const preview = await new Cleaner().cleanup(root, 30, { dryRun: true });
+  const preview = await new Cleaner().cleanup(root, 30);
   assert.equal(preview.matched, 1);
   assert.equal(preview.removed, 0);
   assert.ok(await stat(oldFile));
 
-  const result = await new Cleaner().cleanup(root, 30);
+  const result = await new Cleaner().cleanup(root, 30, { confirm: true });
   assert.equal(result.removed, 1);
   await assert.rejects(stat(oldFile), { code: 'ENOENT' });
 });

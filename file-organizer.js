@@ -11,7 +11,7 @@ function usage() {
   node file-organizer.js scan <directory>
   node file-organizer.js duplicates <directory>
   node file-organizer.js organize <directory> [--output <directory>]
-  node file-organizer.js cleanup <directory> --days <number> [--dry-run]`);
+  node file-organizer.js cleanup <directory> --older-than <days> [--confirm]`);
 }
 
 function option(args, name) {
@@ -78,13 +78,16 @@ async function runOrganize(directory, args) {
 }
 
 async function runCleanup(directory, args) {
-  const days = Number(option(args, '--days'));
-  if (!args.includes('--days') || !Number.isFinite(days)) throw new Error('Для cleanup вкажіть --days <number>.');
-  const dryRun = args.includes('--dry-run');
+  const days = Number(option(args, '--older-than'));
+  if (!args.includes('--older-than') || !Number.isFinite(days) || days < 0) {
+    throw new Error('Для cleanup вкажіть --older-than <days>.');
+  }
+  const confirm = args.includes('--confirm');
   const cleaner = new Cleaner();
-  const result = await cleaner.cleanup(directory, days, { dryRun });
-  console.log(`${dryRun ? 'Would remove' : 'Removed'} ${dryRun ? result.matched : result.removed} files (${formatBytes(result.freedSize)}).`);
-  for (const file of result.files) console.log(`  ${file.path}`);
+  const result = await cleaner.cleanup(directory, days, { confirm });
+  for (const file of result.files) console.log(`  ${file.path} (${formatBytes(file.size)})`);
+  console.log(`${result.dryRun ? 'Would remove' : 'Removed'} ${result.dryRun ? result.matched : result.removed} files (${formatBytes(result.freedSize)}).`);
+  if (result.dryRun) console.log('Dry run: no files were deleted. Re-run with --confirm to remove them.');
   reportErrors(result.errors);
 }
 
